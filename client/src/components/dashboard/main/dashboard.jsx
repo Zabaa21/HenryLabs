@@ -21,7 +21,11 @@ import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import SchoolIcon from '@material-ui/icons/School';
 import clsx from 'clsx';
 import React, { useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import {Link as RouterLink, useHistory} from 'react-router-dom';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import { userLogout } from "../../../redux/loginReducer/loginAction";
+import {useDispatch, useSelector} from "react-redux";
+
 
 const drawerWidth = 240;
 
@@ -102,16 +106,24 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Dashboard() {
-
+  
+  const dispatch = useDispatch();
+  const history = useHistory();
   const classes = useStyles();
   const [open, setOpen] = useState(true);
+  const user = useSelector(store => store.userLoggedIn.userInfo)
+  
   const handleDrawerOpen = () => {
     setOpen(true);
   };
   const handleDrawerClose = () => {
     setOpen(false);
   };
-
+  
+  const logOutHandler = () => {
+    dispatch(userLogout())
+    history.push('/')
+  }
   
 
   return (
@@ -142,6 +154,7 @@ export default function Dashboard() {
             className={classes.title}
           >
             Admin Panel
+            &nbsp; {user.firstName}
           </Typography>
         </Toolbar>
       </AppBar>
@@ -202,6 +215,12 @@ export default function Dashboard() {
                 <SchoolIcon />
               </ListItemIcon>
               <ListItemText primary="Graduados" />
+            </ListItem>
+            <ListItem button onClick={logOutHandler}>
+              <ListItemIcon>
+                <ExitToAppIcon />
+              </ListItemIcon>
+              <ListItemText primary="Exit" />
             </ListItem>
           </div>
         </List>
