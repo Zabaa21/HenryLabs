@@ -1,35 +1,46 @@
-import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import {BrowserRouter, Redirect} from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import CompleteProfile from './components/completeProfile/CompleteProfile'
+import Dashboard from './components/dashboard/main/dashboard';
+import PasswordReset from './components/passwordReset/PasswordReset'
 import CssBaseline from '@material-ui/core/CssBaseline';
+import Login from "./components/logIn/Login";
+import {PrivateRoute, PublicRoute} from "./components/ProtectedRoute";
 
 function App() {
 
+  const palette = useSelector(state => state.darkModeReducer.palette)
+  const force = sessionStorage.getItem('force')
+  
   var theme = createMuiTheme({
     palette: {
-      type: "light",
+      type: palette.type,
       primary: {
-        ligth: "#7986cb",
-        main: "#3f51b5",
-        darker: "#303f9f",
+        light: palette.primaryLight,
+        main: palette.primaryMain,
+        darker: palette.primaryDarker,
       },
       secondary: {
-        ligth: "#ff4081",
-        main: "#f50057",
-        darker: "#c51162",
+        light: palette.secondaryLight,
+        main: palette.secondaryMain,
+        darker: palette.secondaryDarker,
       },
       background:{
-        default: "#fafafa"
-      }
+        default: palette.background
+      },
     },
   });
 
   return (
     <BrowserRouter>
       <ThemeProvider theme={theme}>
-        <CssBaseline/>
-        <div>
-          <p> Hola </p>
-        </div>
+        <CssBaseline />
+          {force === 'pending' && <Redirect to='/completar-perfil'/>}
+          <PublicRoute restricted={true} exact path='/' component={Login}/>
+          <PublicRoute path='/cambiar-clave' component={PasswordReset}/>
+          <PrivateRoute path='/completar-perfil' component={CompleteProfile}/>
+          <PrivateRoute path='/panel' component={Dashboard}/>
       </ThemeProvider>
     </BrowserRouter>
   );
